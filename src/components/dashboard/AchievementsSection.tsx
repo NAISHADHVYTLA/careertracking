@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AchievementBadge from "./AchievementBadge";
 import { Trophy } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Achievement {
   title: string;
@@ -32,6 +33,30 @@ const getIconForAchievement = (title: string) => {
   return 'Trophy';
 };
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20, scale: 0.8 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+    }
+  },
+};
+
 const AchievementsSection = ({ achievements }: AchievementsSectionProps) => {
   // Default achievements if none provided
   const defaultAchievements: Achievement[] = [
@@ -53,33 +78,55 @@ const AchievementsSection = ({ achievements }: AchievementsSectionProps) => {
   const unlockedCount = displayAchievements.filter(a => a.unlocked).length;
   
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Trophy className="h-5 w-5 text-xp" />
-            Achievements
-          </CardTitle>
-          <span className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">{unlockedCount}</span> / {displayAchievements.length} unlocked
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {displayAchievements.map((achievement, index) => (
-            <AchievementBadge 
-              key={index} 
-              title={achievement.title}
-              description={achievement.description}
-              unlocked={achievement.unlocked}
-              rarity={achievement.rarity}
-              iconName={getIconForAchievement(achievement.title)}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Trophy className="h-5 w-5 text-xp" />
+              </motion.div>
+              Achievements
+            </CardTitle>
+            <motion.span 
+              className="text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              <span className="font-bold text-foreground">{unlockedCount}</span> / {displayAchievements.length} unlocked
+            </motion.span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <motion.div 
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            {displayAchievements.map((achievement, index) => (
+              <motion.div key={index} variants={item}>
+                <AchievementBadge 
+                  title={achievement.title}
+                  description={achievement.description}
+                  unlocked={achievement.unlocked}
+                  rarity={achievement.rarity}
+                  iconName={getIconForAchievement(achievement.title)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
