@@ -52,6 +52,7 @@ interface StatsCardsProps {
     hoursStudied: number;
     currentPhase: string;
     weeklyGoalProgress: number;
+    focusScore?: number;
   };
 }
 
@@ -100,8 +101,8 @@ const StatsCards = ({ stats }: StatsCardsProps) => {
       <StatCard
         icon={Zap}
         label="Focus Score"
-        value="92"
-        subtext="Excellent!"
+        value={stats.focusScore ?? 0}
+        subtext={stats.focusScore >= 80 ? "Excellent!" : stats.focusScore >= 50 ? "Good" : "Keep going!"}
         color="success"
       />
     </div>
