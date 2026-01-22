@@ -9,9 +9,9 @@ const NOTION_API_KEY = Deno.env.get('NOTION_API_KEY');
 
 // Database IDs
 const ROADMAP_DB_ID = '5a6ef23e8c574890b4d5ebf44823619b';
-const DAILY_LOG_DB_ID = 'f57f69acf7c646b7b6b40ba622973baf';
-const LEETCODE_DB_ID = '02fbabf965b148be85732aad9535497b';
-const ACHIEVEMENT_DB_ID = 'c85882449a7b438e9f77f5972dd55147';
+const DAILY_LOG_DB_ID = 'c0b02033b895433ca0feb69e7eee4e9f';
+const LEETCODE_DB_ID = 'a2fa8c5756e74bab9f1eefe530adb7b8';
+const ACHIEVEMENT_DB_ID = '3f2c35f322a240c1930e4fe01a673fee';
 
 interface NotionRoadmapPage {
   id: string;
