@@ -1,5 +1,6 @@
 import { LucideIcon, Flame, BookOpen, Code, Rocket, Star, Trophy, Zap, Target, Crown, Sparkles, Brain, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const iconMap: Record<string, LucideIcon> = {
   Flame,
@@ -43,10 +44,18 @@ const AchievementBadge = ({ icon, iconName, title, description, unlocked, rarity
   const Icon = icon || (iconName ? iconMap[iconName] : Trophy) || Trophy;
   
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={unlocked ? { 
+        scale: 1.08,
+        y: -5,
+        transition: { type: "spring", stiffness: 400 }
+      } : {}}
+      whileTap={unlocked ? { scale: 0.95 } : {}}
       className={cn(
-        "relative group flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-300",
-        "bg-gradient-to-br",
+        "relative group flex flex-col items-center p-4 rounded-xl border-2 transition-colors duration-300",
+        "bg-gradient-to-br cursor-pointer",
         unlocked ? rarityStyles[rarity] : "from-muted/50 to-muted/30 border-border/50",
         unlocked && `shadow-lg ${rarityGlow[rarity]}`,
         !unlocked && "opacity-50 grayscale"
@@ -54,10 +63,14 @@ const AchievementBadge = ({ icon, iconName, title, description, unlocked, rarity
     >
       {/* Glow effect for legendary */}
       {unlocked && rarity === "legendary" && (
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-xp/10 to-streak/10 animate-pulse" />
+        <motion.div 
+          className="absolute inset-0 rounded-xl bg-gradient-to-br from-xp/10 to-streak/10"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
       )}
       
-      <div
+      <motion.div
         className={cn(
           "relative w-14 h-14 rounded-full flex items-center justify-center mb-3",
           "bg-gradient-to-br shadow-inner",
@@ -71,9 +84,11 @@ const AchievementBadge = ({ icon, iconName, title, description, unlocked, rarity
                   : "from-secondary to-muted text-foreground"
             : "from-muted to-muted/70 text-muted-foreground"
         )}
+        whileHover={unlocked ? { rotate: [0, -10, 10, 0] } : {}}
+        transition={{ duration: 0.5 }}
       >
         <Icon className="h-7 w-7" />
-      </div>
+      </motion.div>
       
       <h4 className={cn(
         "font-bold text-sm text-center",
@@ -87,17 +102,23 @@ const AchievementBadge = ({ icon, iconName, title, description, unlocked, rarity
       </p>
 
       {/* Rarity indicator */}
-      <div className={cn(
-        "absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase",
-        rarity === "legendary" && "bg-gradient-to-r from-xp to-streak text-xp-foreground",
-        rarity === "epic" && "bg-primary text-primary-foreground",
-        rarity === "rare" && "bg-chart-6 text-white",
-        rarity === "common" && "bg-muted text-muted-foreground",
-        !unlocked && "hidden"
-      )}>
-        {rarity}
-      </div>
-    </div>
+      {unlocked && (
+        <motion.div 
+          className={cn(
+            "absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase",
+            rarity === "legendary" && "bg-gradient-to-r from-xp to-streak text-xp-foreground",
+            rarity === "epic" && "bg-primary text-primary-foreground",
+            rarity === "rare" && "bg-chart-6 text-white",
+            rarity === "common" && "bg-muted text-muted-foreground"
+          )}
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 500, delay: 0.2 }}
+        >
+          {rarity}
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 
