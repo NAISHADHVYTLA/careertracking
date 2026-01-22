@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Sparkles, ExternalLink } from "lucide-react";
+import { Sparkles, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import XPProgressBar from "@/components/dashboard/XPProgressBar";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -7,58 +6,39 @@ import ProgressChart from "@/components/dashboard/ProgressChart";
 import StreakCalendar from "@/components/dashboard/StreakCalendar";
 import AchievementsSection from "@/components/dashboard/AchievementsSection";
 import WeeklyActivityChart from "@/components/dashboard/WeeklyActivityChart";
+import { useNotionData } from "@/hooks/useNotionData";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Sample data - in production, this would come from your backend/Notion
-const mockData = {
-  xp: {
-    currentXP: 2450,
-    levelXP: 3000,
-    level: 12,
-    totalXP: 15450,
-  },
-  stats: {
-    topicsCompleted: 23,
-    totalTopics: 85,
-    problemsSolved: 67,
-    hoursStudied: 48,
-    currentPhase: "Backend",
-    weeklyGoalProgress: 75,
-  },
-  phases: [
-    { name: "Foundation", progress: 85, color: "primary" },
-    { name: "CS Fundamentals", progress: 60, color: "accent" },
-    { name: "Backend", progress: 35, color: "xp" },
-    { name: "System Design", progress: 10, color: "streak" },
-    { name: "ML/AI", progress: 5, color: "success" },
-    { name: "MLOps", progress: 0, color: "chart-6" },
-  ],
-  studyDays: [
-    new Date(2026, 0, 1),
-    new Date(2026, 0, 2),
-    new Date(2026, 0, 3),
-    new Date(2026, 0, 5),
-    new Date(2026, 0, 6),
-    new Date(2026, 0, 7),
-    new Date(2026, 0, 8),
-    new Date(2026, 0, 10),
-    new Date(2026, 0, 12),
-    new Date(2026, 0, 13),
-    new Date(2026, 0, 14),
-    new Date(2026, 0, 15),
-    new Date(2026, 0, 16),
-    new Date(2026, 0, 17),
-    new Date(2026, 0, 19),
-    new Date(2026, 0, 20),
-    new Date(2026, 0, 21),
-    new Date(2026, 0, 22),
-  ],
-  streak: {
-    current: 4,
-    longest: 8,
-  },
+// Fallback study days (will be replaced when we add Daily Study Log integration)
+const studyDays = [
+  new Date(2026, 0, 1),
+  new Date(2026, 0, 2),
+  new Date(2026, 0, 3),
+  new Date(2026, 0, 5),
+  new Date(2026, 0, 6),
+  new Date(2026, 0, 7),
+  new Date(2026, 0, 8),
+  new Date(2026, 0, 10),
+  new Date(2026, 0, 12),
+  new Date(2026, 0, 13),
+  new Date(2026, 0, 14),
+  new Date(2026, 0, 15),
+  new Date(2026, 0, 16),
+  new Date(2026, 0, 17),
+  new Date(2026, 0, 19),
+  new Date(2026, 0, 20),
+  new Date(2026, 0, 21),
+  new Date(2026, 0, 22),
+];
+
+const streak = {
+  current: 4,
+  longest: 8,
 };
 
 const Index = () => {
+  const { data, isLoading, error, refetch, isFetching } = useNotionData();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -74,37 +54,97 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Track your path to ML Engineer</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <ExternalLink className="h-4 w-4" />
-              Open Notion Tracker
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => refetch()}
+                disabled={isFetching}
+                className="gap-2"
+              >
+                {isFetching ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                Sync
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2"
+                onClick={() => window.open('https://notion.so', '_blank')}
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open Notion
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* XP Progress */}
-        <XPProgressBar {...mockData.xp} />
+        {/* Error State */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
+            <p className="text-destructive font-medium">Failed to load data from Notion</p>
+            <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => refetch()}>
+              Try Again
+            </Button>
+          </div>
+        )}
 
-        {/* Stats Overview */}
-        <StatsCards stats={mockData.stats} />
+        {/* Loading State */}
+        {isLoading && (
+          <div className="space-y-6">
+            <Skeleton className="h-24 w-full rounded-xl" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-28 rounded-xl" />
+              ))}
+            </div>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Skeleton className="h-80 rounded-xl" />
+              <Skeleton className="h-80 rounded-xl" />
+            </div>
+          </div>
+        )}
 
-        {/* Charts Grid */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          <ProgressChart phases={mockData.phases} />
-          <WeeklyActivityChart />
-        </div>
+        {/* Data Loaded */}
+        {data && !isLoading && (
+          <>
+            {/* XP Progress */}
+            <XPProgressBar {...data.xp} />
 
-        {/* Streak Calendar */}
-        <StreakCalendar
-          studyDays={mockData.studyDays}
-          currentStreak={mockData.streak.current}
-          longestStreak={mockData.streak.longest}
-        />
+            {/* Stats Overview */}
+            <StatsCards stats={data.stats} />
 
-        {/* Achievements */}
-        <AchievementsSection />
+            {/* Charts Grid */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              <ProgressChart phases={data.phases} />
+              <WeeklyActivityChart />
+            </div>
+
+            {/* Streak Calendar */}
+            <StreakCalendar
+              studyDays={studyDays}
+              currentStreak={streak.current}
+              longestStreak={streak.longest}
+            />
+
+            {/* Achievements */}
+            <AchievementsSection />
+
+            {/* Last Updated */}
+            <div className="text-center py-4">
+              <p className="text-xs text-muted-foreground">
+                Last synced: {new Date(data.lastUpdated).toLocaleString()}
+              </p>
+            </div>
+          </>
+        )}
 
         {/* Motivational Footer */}
         <div className="text-center py-8">
