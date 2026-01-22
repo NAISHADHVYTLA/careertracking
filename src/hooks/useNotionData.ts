@@ -64,9 +64,11 @@ export const useNotionData = () => {
   return useQuery({
     queryKey: ['notion-data'],
     queryFn: fetchNotionData,
-    staleTime: 1000 * 30, // 30 seconds - data considered fresh
-    refetchInterval: 1000 * 60, // Auto-refetch every 1 minute for near real-time
+    staleTime: 1000 * 5, // 5 seconds - data considered fresh
+    refetchInterval: 1000 * 10, // Auto-refetch every 10 seconds for real-time
     refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnReconnect: true, // Refetch when connection restores
+    refetchIntervalInBackground: true, // Keep fetching even when tab is hidden
     retry: 3,
   });
 };
