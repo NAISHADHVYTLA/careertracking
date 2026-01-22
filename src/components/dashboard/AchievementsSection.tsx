@@ -1,109 +1,56 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AchievementBadge from "./AchievementBadge";
-import { 
-  Flame, 
-  BookOpen, 
-  Code, 
-  Rocket, 
-  Star, 
-  Trophy,
-  Zap,
-  Target,
-  Crown,
-  Sparkles,
-  Brain,
-  GraduationCap
-} from "lucide-react";
+import { Trophy } from "lucide-react";
 
-const achievements = [
-  {
-    icon: Flame,
-    title: "First Flame",
-    description: "Complete your first study day",
-    unlocked: true,
-    rarity: "common" as const,
-  },
-  {
-    icon: BookOpen,
-    title: "Knowledge Seeker",
-    description: "Complete 10 topics",
-    unlocked: true,
-    rarity: "common" as const,
-  },
-  {
-    icon: Code,
-    title: "Code Warrior",
-    description: "Solve 50 LeetCode problems",
-    unlocked: true,
-    rarity: "rare" as const,
-  },
-  {
-    icon: Zap,
-    title: "Week Warrior",
-    description: "7-day study streak",
-    unlocked: true,
-    rarity: "rare" as const,
-  },
-  {
-    icon: Target,
-    title: "Goal Crusher",
-    description: "Hit weekly goal 4 weeks in a row",
-    unlocked: false,
-    rarity: "epic" as const,
-  },
-  {
-    icon: Brain,
-    title: "ML Initiate",
-    description: "Complete the ML Mathematics phase",
-    unlocked: false,
-    rarity: "epic" as const,
-  },
-  {
-    icon: Rocket,
-    title: "Ship It!",
-    description: "Deploy your first ML project",
-    unlocked: false,
-    rarity: "epic" as const,
-  },
-  {
-    icon: Crown,
-    title: "Consistency King",
-    description: "30-day study streak",
-    unlocked: false,
-    rarity: "legendary" as const,
-  },
-  {
-    icon: Star,
-    title: "Century Club",
-    description: "Solve 100 LeetCode problems",
-    unlocked: false,
-    rarity: "legendary" as const,
-  },
-  {
-    icon: GraduationCap,
-    title: "ML Engineer",
-    description: "Complete the entire roadmap",
-    unlocked: false,
-    rarity: "legendary" as const,
-  },
-  {
-    icon: Trophy,
-    title: "Perfectionist",
-    description: "100% completion in all phases",
-    unlocked: false,
-    rarity: "legendary" as const,
-  },
-  {
-    icon: Sparkles,
-    title: "Early Bird",
-    description: "Study before 7 AM for 5 days",
-    unlocked: false,
-    rarity: "rare" as const,
-  },
-];
+interface Achievement {
+  title: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  unlocked: boolean;
+  description: string;
+  xpReward: number;
+}
 
-const AchievementsSection = () => {
-  const unlockedCount = achievements.filter(a => a.unlocked).length;
+interface AchievementsSectionProps {
+  achievements?: Achievement[];
+}
+
+// Icon mapping based on achievement title keywords
+const getIconForAchievement = (title: string) => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('flame') || lowerTitle.includes('fire')) return 'Flame';
+  if (lowerTitle.includes('knowledge') || lowerTitle.includes('seeker')) return 'BookOpen';
+  if (lowerTitle.includes('code') || lowerTitle.includes('warrior')) return 'Code';
+  if (lowerTitle.includes('week')) return 'Zap';
+  if (lowerTitle.includes('goal') || lowerTitle.includes('crusher')) return 'Target';
+  if (lowerTitle.includes('initiate') || lowerTitle.includes('brain')) return 'Brain';
+  if (lowerTitle.includes('ship') || lowerTitle.includes('rocket')) return 'Rocket';
+  if (lowerTitle.includes('king') || lowerTitle.includes('consistency')) return 'Crown';
+  if (lowerTitle.includes('century') || lowerTitle.includes('club') || lowerTitle.includes('star')) return 'Star';
+  if (lowerTitle.includes('engineer') || lowerTitle.includes('ml')) return 'GraduationCap';
+  if (lowerTitle.includes('perfect')) return 'Trophy';
+  if (lowerTitle.includes('early') || lowerTitle.includes('bird')) return 'Sparkles';
+  return 'Trophy';
+};
+
+const AchievementsSection = ({ achievements }: AchievementsSectionProps) => {
+  // Default achievements if none provided
+  const defaultAchievements: Achievement[] = [
+    { title: "First Flame", description: "Complete your first study day", unlocked: false, rarity: "common", xpReward: 10 },
+    { title: "Knowledge Seeker", description: "Complete 10 topics", unlocked: false, rarity: "common", xpReward: 25 },
+    { title: "Code Warrior", description: "Solve 50 LeetCode problems", unlocked: false, rarity: "rare", xpReward: 50 },
+    { title: "Week Warrior", description: "7-day study streak", unlocked: false, rarity: "rare", xpReward: 50 },
+    { title: "Goal Crusher", description: "Hit weekly goal 4 weeks in a row", unlocked: false, rarity: "epic", xpReward: 100 },
+    { title: "ML Initiate", description: "Complete the ML Mathematics phase", unlocked: false, rarity: "epic", xpReward: 100 },
+    { title: "Ship It!", description: "Deploy your first ML project", unlocked: false, rarity: "epic", xpReward: 100 },
+    { title: "Consistency King", description: "30-day study streak", unlocked: false, rarity: "legendary", xpReward: 200 },
+    { title: "Century Club", description: "Solve 100 LeetCode problems", unlocked: false, rarity: "legendary", xpReward: 200 },
+    { title: "ML Engineer", description: "Complete the entire roadmap", unlocked: false, rarity: "legendary", xpReward: 500 },
+    { title: "Perfectionist", description: "100% completion in all phases", unlocked: false, rarity: "legendary", xpReward: 500 },
+    { title: "Early Bird", description: "Study before 7 AM for 5 days", unlocked: false, rarity: "rare", xpReward: 50 },
+  ];
+
+  const displayAchievements = achievements && achievements.length > 0 ? achievements : defaultAchievements;
+  const unlockedCount = displayAchievements.filter(a => a.unlocked).length;
   
   return (
     <Card>
@@ -114,14 +61,21 @@ const AchievementsSection = () => {
             Achievements
           </CardTitle>
           <span className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">{unlockedCount}</span> / {achievements.length} unlocked
+            <span className="font-bold text-foreground">{unlockedCount}</span> / {displayAchievements.length} unlocked
           </span>
         </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {achievements.map((achievement, index) => (
-            <AchievementBadge key={index} {...achievement} />
+          {displayAchievements.map((achievement, index) => (
+            <AchievementBadge 
+              key={index} 
+              title={achievement.title}
+              description={achievement.description}
+              unlocked={achievement.unlocked}
+              rarity={achievement.rarity}
+              iconName={getIconForAchievement(achievement.title)}
+            />
           ))}
         </div>
       </CardContent>

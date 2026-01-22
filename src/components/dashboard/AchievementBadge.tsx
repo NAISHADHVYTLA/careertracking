@@ -1,8 +1,24 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Flame, BookOpen, Code, Rocket, Star, Trophy, Zap, Target, Crown, Sparkles, Brain, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const iconMap: Record<string, LucideIcon> = {
+  Flame,
+  BookOpen,
+  Code,
+  Rocket,
+  Star,
+  Trophy,
+  Zap,
+  Target,
+  Crown,
+  Sparkles,
+  Brain,
+  GraduationCap,
+};
+
 interface AchievementBadgeProps {
-  icon: LucideIcon;
+  iconName?: string;
+  icon?: LucideIcon;
   title: string;
   description: string;
   unlocked: boolean;
@@ -23,7 +39,9 @@ const rarityGlow = {
   legendary: "shadow-xp/30",
 };
 
-const AchievementBadge = ({ icon: Icon, title, description, unlocked, rarity }: AchievementBadgeProps) => {
+const AchievementBadge = ({ icon, iconName, title, description, unlocked, rarity }: AchievementBadgeProps) => {
+  const Icon = icon || (iconName ? iconMap[iconName] : Trophy) || Trophy;
+  
   return (
     <div
       className={cn(

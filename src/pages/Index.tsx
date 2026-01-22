@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Sparkles, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import XPProgressBar from "@/components/dashboard/XPProgressBar";
@@ -8,33 +9,6 @@ import AchievementsSection from "@/components/dashboard/AchievementsSection";
 import WeeklyActivityChart from "@/components/dashboard/WeeklyActivityChart";
 import { useNotionData } from "@/hooks/useNotionData";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Fallback study days (will be replaced when we add Daily Study Log integration)
-const studyDays = [
-  new Date(2026, 0, 1),
-  new Date(2026, 0, 2),
-  new Date(2026, 0, 3),
-  new Date(2026, 0, 5),
-  new Date(2026, 0, 6),
-  new Date(2026, 0, 7),
-  new Date(2026, 0, 8),
-  new Date(2026, 0, 10),
-  new Date(2026, 0, 12),
-  new Date(2026, 0, 13),
-  new Date(2026, 0, 14),
-  new Date(2026, 0, 15),
-  new Date(2026, 0, 16),
-  new Date(2026, 0, 17),
-  new Date(2026, 0, 19),
-  new Date(2026, 0, 20),
-  new Date(2026, 0, 21),
-  new Date(2026, 0, 22),
-];
-
-const streak = {
-  current: 4,
-  longest: 8,
-};
 
 const Index = () => {
   const { data, isLoading, error, refetch, isFetching } = useNotionData();
@@ -124,18 +98,18 @@ const Index = () => {
             {/* Charts Grid */}
             <div className="grid lg:grid-cols-2 gap-6">
               <ProgressChart phases={data.phases} />
-              <WeeklyActivityChart />
+              <WeeklyActivityChart data={data.weeklyActivity} />
             </div>
 
             {/* Streak Calendar */}
             <StreakCalendar
-              studyDays={studyDays}
-              currentStreak={streak.current}
-              longestStreak={streak.longest}
+              studyDays={data.studyDays.map(d => new Date(d))}
+              currentStreak={data.streak.current}
+              longestStreak={data.streak.longest}
             />
 
             {/* Achievements */}
-            <AchievementsSection />
+            <AchievementsSection achievements={data.achievements} />
 
             {/* Last Updated */}
             <div className="text-center py-4">

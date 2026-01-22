@@ -9,7 +9,21 @@ interface Phase {
   total: number;
 }
 
-interface NotionData {
+interface WeeklyActivity {
+  day: string;
+  hours: number;
+  problems: number;
+}
+
+interface Achievement {
+  title: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  unlocked: boolean;
+  description: string;
+  xpReward: number;
+}
+
+export interface NotionData {
   xp: {
     currentXP: number;
     levelXP: number;
@@ -23,8 +37,16 @@ interface NotionData {
     hoursStudied: number;
     currentPhase: string;
     weeklyGoalProgress: number;
+    focusScore: number;
   };
   phases: Phase[];
+  weeklyActivity: WeeklyActivity[];
+  streak: {
+    current: number;
+    longest: number;
+  };
+  studyDays: string[];
+  achievements: Achievement[];
   lastUpdated: string;
 }
 

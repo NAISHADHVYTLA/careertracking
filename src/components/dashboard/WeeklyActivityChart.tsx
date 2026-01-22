@@ -1,19 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis } from "recharts";
 import { Activity } from "lucide-react";
 
-const weeklyData = [
-  { day: "Mon", hours: 3.5, problems: 5 },
-  { day: "Tue", hours: 2.0, problems: 3 },
-  { day: "Wed", hours: 4.0, problems: 7 },
-  { day: "Thu", hours: 1.5, problems: 2 },
-  { day: "Fri", hours: 3.0, problems: 4 },
-  { day: "Sat", hours: 5.0, problems: 8 },
-  { day: "Sun", hours: 4.5, problems: 6 },
-];
+interface WeeklyActivityData {
+  day: string;
+  hours: number;
+  problems: number;
+}
 
-const WeeklyActivityChart = () => {
+interface WeeklyActivityChartProps {
+  data?: WeeklyActivityData[];
+}
+
+const WeeklyActivityChart = ({ data }: WeeklyActivityChartProps) => {
   const chartConfig = {
     hours: {
       label: "Study Hours",
@@ -25,12 +25,35 @@ const WeeklyActivityChart = () => {
     },
   };
 
+  const weeklyData = data || [
+    { day: "Sun", hours: 0, problems: 0 },
+    { day: "Mon", hours: 0, problems: 0 },
+    { day: "Tue", hours: 0, problems: 0 },
+    { day: "Wed", hours: 0, problems: 0 },
+    { day: "Thu", hours: 0, problems: 0 },
+    { day: "Fri", hours: 0, problems: 0 },
+    { day: "Sat", hours: 0, problems: 0 },
+  ];
+
+  const totalHours = weeklyData.reduce((sum, d) => sum + d.hours, 0);
+  const totalProblems = weeklyData.reduce((sum, d) => sum + d.problems, 0);
+
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="h-5 w-5 text-accent" />
-          This Week's Activity
+        <CardTitle className="flex items-center justify-between text-lg">
+          <div className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-accent" />
+            This Week's Activity
+          </div>
+          <div className="flex gap-4 text-sm font-normal">
+            <span className="text-muted-foreground">
+              <span className="font-semibold text-foreground">{totalHours.toFixed(1)}</span> hrs
+            </span>
+            <span className="text-muted-foreground">
+              <span className="font-semibold text-foreground">{totalProblems}</span> problems
+            </span>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
